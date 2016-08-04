@@ -39,9 +39,15 @@
 			</ion-list>
 		</ion-card-content>
 	</ion-card>
+	<h5>Guest List</h5>
 	<ion-list>
-    <ion-item *ngFor="let guest of guestList">
-      <h2>{{guest.guestName}}</h2>
-    </ion-item>
+    <ion-item-sliding *ngFor="let guest of guestList">
+			<ion-item>
+				<h2>{{guest.name}}</h2>
+			</ion-item>
+			<ion-item-options>
+				<button danger (click)="removeGuest(guest.id)"><icon trash></icon> Delete</button>
+			</ion-item-options>
+    </ion-item-sliding>
   </ion-list>
 </ion-content>

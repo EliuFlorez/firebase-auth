@@ -42,4 +42,13 @@ export class EventData {
 			});
 		});
 	}
+	
+	removeGuest(guestId, eventId, eventPrice): any {
+		return this.eventList.child(eventId).child('guestList/'+guestId).remove().then(() => {
+			this.eventList.child(eventId).child('revenue').transaction( (revenue) => {
+				revenue -= eventPrice;
+				return revenue;
+			});
+		});
+	}
 }
