@@ -1,12 +1,11 @@
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
-import { AuthData } from '../../providers/auth-data/auth-data';
-import { EventData } from '../../providers/event-data/event-data';
 import { LoginPage } from '../login/login';
 import { ProfilePage } from '../profile/profile';
-
 import { EventCreatePage } from '../event-create/event-create';
 import { EventDetailPage } from '../event-detail/event-detail';
+import { AuthData } from '../../providers/auth-data/auth-data';
+import { EventData } from '../../providers/event-data/event-data';
 
 @Component({
   templateUrl: 'build/pages/home/home.html',
@@ -39,9 +38,9 @@ export class HomePage {
 		this.nav.push(EventCreatePage);
 	}
 	
-	goToEventDetail(eventDetail) {
+	goToEventDetail(eventId) {
 		this.nav.push(EventDetailPage, {
-			eventDetail: eventDetail,
+			eventId: eventId
 		});
 	}
 	

@@ -1,19 +1,22 @@
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
+import { LoginPage } from '../login/login';
 import { EventCreatePage } from '../event-create/event-create';
 import { EventDetailPage } from '../event-detail/event-detail';
 import { EventData } from '../../providers/event-data/event-data';
+import { AuthData } from '../../providers/auth-data/auth-data';
 
 @Component({
   templateUrl: 'build/pages/event-list/event-list.html',
-  providers: [EventData]
+  providers: [AuthData, EventData]
 })
 export class EventListPage {
 
   private eventList: any;
 
-  constructor(private nav: NavController, private eventData: EventData) {
+  constructor(private nav: NavController, private authData: AuthData, private eventData: EventData) {
     this.nav = nav;
+    this.authData = authData;
     this.eventData = eventData;
 		
 		this.eventData.getEventList().on('value', snapshot => {
@@ -34,9 +37,15 @@ export class EventListPage {
 		this.nav.push(EventCreatePage);
 	}
 	
-	goToEventDetail(eventDetail) {
+	goToEventDetail(eventId) {
 		this.nav.push(EventDetailPage, {
-			eventDetail: eventDetail,
+			eventId: eventId
+		});
+	}
+	
+	logOut(){
+		this.authData.logoutUser().then(() => {
+			this.nav.rootNav.setRoot(LoginPage);
 		});
 	}
 	

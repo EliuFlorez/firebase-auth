@@ -9,7 +9,7 @@
 
 <ion-content padding class="event-list">
   <ion-list>
-    <ion-item *ngFor="let event of eventList" (click)="goToEventDetail(event)">
+    <ion-item *ngFor="let event of eventList" (click)="goToEventDetail(event.id)">
       <h2>{{event?.name}}</h2>
       <p>Ticket: <strong>{{event?.price}}</strong></p>
       <p>Date: <strong>{{event?.date}}</strong></p>
