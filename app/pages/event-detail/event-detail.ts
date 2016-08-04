@@ -22,7 +22,6 @@ export class EventDetailPage {
 			if (typeof this.currentEvent.guestList !== 'undefined') {
 				var guestData = this.currentEvent.guestList;
 				Object.keys(guestData).forEach(function(key, value) {
-						console.log(guestData[key]);
 						rawList.push({
 							id: key,
 							name: guestData[key].guestName
