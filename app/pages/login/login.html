@@ -1,21 +1,20 @@
 <ion-header>
-  <ion-navbar primary>
-    <ion-title>
-      Login
-    </ion-title>
+  <ion-navbar>
+    <ion-title>Login</ion-title>
   </ion-navbar>
 </ion-header>
 
 <ion-content padding class="login">
-  <form [ngFormModel]="loginForm" (submit)="loginUser($event)">
+  <form [formGroup]="loginForm" (submit)="loginUser($event)">
     <ion-item>
       <ion-label stacked>Email</ion-label>
-      <ion-input ngControl="email" type="email"></ion-input>
+      <ion-input [formControl]="email" type="email"></ion-input>
     </ion-item>
     <ion-item>
       <ion-label stacked>Password</ion-label>
-      <ion-input ngControl="password" type="password"></ion-input>
+      <ion-input [formControl]="password" type="password"></ion-input>
     </ion-item>
+		<br>
     <button block type="submit">
       Login
     </button>

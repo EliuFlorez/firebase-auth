@@ -15,8 +15,8 @@ export class HomePage {
 
 	private eventList: any;
 
-  constructor(private nav: NavController, public authData: AuthData, private eventData: EventData) {
-    this.nav = nav;
+  constructor(private navCtrl: NavController, public authData: AuthData, private eventData: EventData) {
+    this.navCtrl = navCtrl;
 		this.authData = authData;
     this.eventData = eventData;
 		
@@ -35,18 +35,18 @@ export class HomePage {
   }
 	
 	goToCreate(){
-		this.nav.push(EventCreatePage);
+		this.navCtrl.push(EventCreatePage);
 	}
 	
 	goToEventDetail(eventId) {
-		this.nav.push(EventDetailPage, {
+		this.navCtrl.push(EventDetailPage, {
 			eventId: eventId
 		});
 	}
 	
 	logOut(){
 		this.authData.logoutUser().then(() => {
-			this.nav.rootNav.setRoot(LoginPage);
+			this.navCtrl.setRoot(LoginPage);
 		});
 	}
 	

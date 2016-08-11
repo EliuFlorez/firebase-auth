@@ -1,8 +1,9 @@
-import { NavController, Alert } from 'ionic-angular';
 import { Component } from '@angular/core';
+import { NavController, AlertController } from 'ionic-angular';
 import { ProfileData } from '../../providers/profile-data/profile-data';
 import { AuthData } from '../../providers/auth-data/auth-data';
 import { LoginPage } from '../login/login';
+import { Camera } from 'ionic-native';
 
 @Component({
   templateUrl: 'build/pages/profile/profile.html',
@@ -13,9 +14,8 @@ export class ProfilePage {
 	public userProfile: any;
   public birthDate: string;
 
-  constructor(public nav: NavController, public profileData: ProfileData,
-    public authData: AuthData) {
-    this.nav = nav;
+  constructor(public navCtrl: NavController, private alertCtrl: AlertController, public profileData: ProfileData, public authData: AuthData) {
+    this.navCtrl = navCtrl;
     this.profileData = profileData;
 
     this.profileData.getUserProfile().on('value', (data) => {
@@ -24,14 +24,55 @@ export class ProfilePage {
     });
   }
 	
-	logOut(){
+	logOut() {
 		this.authData.logoutUser().then(() => {
-			this.nav.rootNav.setRoot(LoginPage);
+			this.navCtrl.setRoot(LoginPage);
+		});
+	}
+	
+	getPicture() {
+		Camera.getPicture({
+			quality : 95,
+			destinationType : Camera.DestinationType.DATA_URL, // DATA_URL, FILE_URI
+			sourceType : Camera.PictureSourceType.PHOTOLIBRARY, // CAMERA, PHOTOLIBRARY, SAVEDPHOTOALBUM
+			allowEdit : true,
+			encodingType: Camera.EncodingType.PNG, // PNG, JPG
+			targetWidth: 500,
+			targetHeight: 500,
+			saveToPhotoAlbum: true
+		}).then(imageData => {
+			const b64toBlob = (b64Data, contentType = '', sliceSize = 512) => {
+				const byteCharacters = atob(b64Data);
+				const byteArrays = [];
+
+				for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+					const slice = byteCharacters.slice(offset, offset + sliceSize);
+
+					const byteNumbers = new Array(slice.length);
+					for (let i = 0; i < slice.length; i++) {
+						byteNumbers[i] = slice.charCodeAt(i);
+					}
+
+					const byteArray = new Uint8Array(byteNumbers);
+
+					byteArrays.push(byteArray);
+				}
+
+				const blob = new Blob(byteArrays, {type: contentType});
+				return blob;
+			}
+
+			let userPicture = b64toBlob(imageData, 'image/png');
+			
+			this.profileData.updatePicture(userPicture);
+			
+		}, error => {
+			console.log("ERROR -> " + JSON.stringify(error));
 		});
 	}
 	
 	updateName(){
-		let prompt = Alert.create({
+		let prompt = this.alertCtrl.create({
 			message: "Your first name & last name",
 			inputs: [
 				{
@@ -57,7 +98,7 @@ export class ProfilePage {
 				}
 			]
 		});
-		this.nav.present(prompt);
+		prompt.present();
 	}
 	
 	updateDOB(birthDate){
@@ -65,7 +106,7 @@ export class ProfilePage {
 	}
 	
 	updateEmail(){
-		let prompt = Alert.create({
+		let prompt = this.alertCtrl.create({
 			inputs: [
 				{
 					name: 'newEmail',
@@ -84,11 +125,11 @@ export class ProfilePage {
 				}
 			]
 		});
-		this.nav.present(prompt);
+		prompt.present();
 	}
 
 	updatePassword(){
-		let prompt = Alert.create({
+		let prompt = this.alertCtrl.create({
 			inputs: [
 				{
 					name: 'newPassword',
@@ -108,7 +149,7 @@ export class ProfilePage {
 				}
 			]
 		});
-		this.nav.present(prompt);
+		prompt.present();
 	}
 	
 }

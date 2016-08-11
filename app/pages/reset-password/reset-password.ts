@@ -1,8 +1,7 @@
-import { NavController, Loading } from 'ionic-angular';
 import { Component } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/common';
+import { NavController, AlertController, LoadingController } from 'ionic-angular';
+import { ControlGroup, AbstractControl, FormBuilder, Validators } from '@angular/common';
 import { AuthData } from '../../providers/auth-data/auth-data';
-import { LoginPage } from '../login/login';
 
 @Component({
   templateUrl: 'build/pages/reset-password/reset-password.html',
@@ -10,23 +9,48 @@ import { LoginPage } from '../login/login';
 })
 export class ResetPasswordPage {
   
-	public resetPasswordForm: any;
+	public resetPasswordForm: ControlGroup;
+	public email: AbstractControl;
 
-  constructor(public authData: AuthData, public formBuilder: FormBuilder, public nav: NavController) {
+  constructor(
+		public navCtrl: NavController, 
+		public alertCtrl: AlertController, 
+		public loadingCtrl: LoadingController, 
+		public authData: AuthData, 
+		public formBuilder: FormBuilder
+	) {
     this.authData = authData;
-
+		
     this.resetPasswordForm = formBuilder.group({
-      email: ['', Validators.required],
-    })
+      email: ['', Validators.required]
+    });
+		
+		this.email = this.resetPasswordForm.controls['email'];
   }
 	
-	resetPassword(event){
+	resetPassword(event) {
 		event.preventDefault();
-		this.authData.resetPassword(this.resetPasswordForm.value.email);
-		let loading = Loading.create({
-			dismissOnPageChange: true,
-		});
-		this.nav.present(loading);
+		let loading = this.loadingCtrl.create();
+    loading.present();
+    this.authData.resetPassword(this.resetPasswordForm.value.email).then((user) => {
+      loading.onDidDismiss(() => {
+        let prompt = this.alertCtrl.create({
+					message: "We just sent you a reset link to your email",
+					buttons: ['Ok']
+				});
+				prompt.present();
+      });
+      loading.dismiss();
+    }, (error) => {
+      loading.onDidDismiss(() => {
+        let prompt = this.alertCtrl.create({
+          message: error.message,
+          buttons: ['Ok']
+        });
+        prompt.present();
+      });
+      loading.dismiss();
+    });
 	}
 	
 }

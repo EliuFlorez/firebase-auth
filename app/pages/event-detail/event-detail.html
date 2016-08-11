@@ -33,15 +33,20 @@
 					<ion-label stacked>Name</ion-label>
 					<ion-input [(ngModel)]="guestName" type="text" placeholder="What's your guest's name?"></ion-input>
 				</ion-item>
+				<span *ngIf="guestPicture">Picture taken!</span>
+				<button primary block (click)="takePicture()">
+					Take a Picture
+				</button>
 				<button primary block (click)="addGuest(guestName)">
 					Add Guest
 				</button>
 			</ion-list>
 		</ion-card-content>
 	</ion-card>
-	<h5>Guest List</h5>
 	<ion-list>
-    <ion-item-sliding *ngFor="let guest of guestList">
+		<br>
+		<center><h5>Guest List</h5></center>
+		<ion-item-sliding *ngFor="let guest of guestList">
 			<ion-item>
 				<h2>{{guest.name}}</h2>
 			</ion-item>

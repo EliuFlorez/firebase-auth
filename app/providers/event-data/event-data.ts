@@ -6,10 +6,12 @@ export class EventData {
   
 	public currentUser: any;
   public eventList: any;
+	public profilePictureRef: any;
 
   constructor() {
     this.currentUser = firebase.auth().currentUser.uid;
     this.eventList = firebase.database().ref('userProfile/' + this.currentUser + '/eventList');
+		this.profilePictureRef = firebase.storage().ref('/guestProfile/');
   }
 
 	getEventList(): any {
@@ -32,10 +34,15 @@ export class EventData {
 		return this.eventList.child(eventId);
 	}
 
-	addGuest(guestName, eventId, eventPrice): any {
+	addGuest(guestName, eventId, eventPrice, guestPicture = null): any {
 		return this.eventList.child(eventId).child('guestList').push({
 			guestName: guestName
-		}).then(() => {
+		}).then((newGuest) => {
+			this.profilePictureRef.child(newGuest.key).child('profilePicture.png')
+				.put(guestPicture).then((savedPicture) => {
+					this.eventList.child(eventId).child('guestList').child(newGuest.key).child('profilePicture')
+						.set(savedPicture.downloadURL);
+			});
 			this.eventList.child(eventId).child('revenue').transaction( (revenue) => {
 				revenue += eventPrice;
 				return revenue;

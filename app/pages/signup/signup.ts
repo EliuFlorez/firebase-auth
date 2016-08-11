@@ -1,6 +1,6 @@
-import { NavController, Loading } from 'ionic-angular';
 import { Component } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/common';
+import { NavController, AlertController, LoadingController } from 'ionic-angular';
+import { ControlGroup, AbstractControl, FormBuilder, Validators } from '@angular/common';
 import { AuthData } from '../../providers/auth-data/auth-data';
 
 @Component({
@@ -9,25 +9,54 @@ import { AuthData } from '../../providers/auth-data/auth-data';
 })
 export class SignupPage {
   
-	public signupForm: any;
+	public signupForm: ControlGroup;
+	public email: AbstractControl;
+	public password: AbstractControl;
 
-  constructor(public nav: NavController, public authData: AuthData, public formBuilder: FormBuilder) {
-    this.nav = nav;
+  constructor(
+		public navCtrl: NavController, 
+		public alertCtrl: AlertController, 
+		public loadingCtrl: LoadingController, 
+		public authData: AuthData, 
+		public formBuilder: FormBuilder
+	) {
+    this.navCtrl = navCtrl;
     this.authData = authData;
 
     this.signupForm = formBuilder.group({
       email: ['', Validators.required],
       password: ['', Validators.required]
-    })
+    });
+		
+		this.email = this.signupForm.controls['email'];
+		this.password = this.signupForm.controls['password'];
   }
 	
-	signupUser(event){
+	signupUser(event) {
 		event.preventDefault();
-		this.authData.signupUser(this.signupForm.value.email, this.signupForm.value.password);
-		let loading = Loading.create({
-			dismissOnPageChange: true,
-		});
-		this.nav.present(loading);
+		let loading = this.loadingCtrl.create();
+    loading.present();
+    this.authData.signupUser(this.signupForm.value.email, this.signupForm.value.password).then((authData) => {
+      loading.onDidDismiss(() => {
+        this.authData.fireAuth.signInWithEmailAndPassword(this.signupForm.value.email, this.signupForm.value.password).then((authenticatedUser) => {
+          this.authData.userProfile.child(authenticatedUser.uid).set({
+            email: this.signupForm.value.email
+          }).then(() => {
+            this.navCtrl.popToRoot();
+          });
+        });
+      });
+      loading.dismiss();
+    }, (error) => {
+      loading.onDidDismiss(() => {
+        let prompt = this.alertCtrl.create({
+          message: error.message,
+          buttons: ['Ok']
+        });
+        prompt.present();
+      });
+      loading.dismiss();
+    });
 	}
 	
 }

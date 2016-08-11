@@ -10,6 +10,7 @@ export class ProfileData {
   
 	public userProfile: any; // We'll use this to create a database reference to the userProfile node.
   public currentUser: any; // We'll use this to create an auth reference to the logged in user.
+	public profilePictureRef: any;
 
   constructor() {
     /**
@@ -17,6 +18,7 @@ export class ProfileData {
     */
     this.currentUser = firebase.auth().currentUser;
     this.userProfile = firebase.database().ref('/userProfile');
+		this.profilePictureRef = firebase.storage().ref('/userProfile/');
   }
 
   /**
@@ -37,6 +39,14 @@ export class ProfileData {
       firstName: firstName,
       lastName: lastName,
     });
+  }
+	
+	updatePicture(userPicture = null): any {
+		this.profilePictureRef.child(this.currentUser.uid).child('userPicture.png')
+			.put(userPicture).then((savedPicture) => {
+				this.userProfile.child(this.currentUser.uid).child('userPicture')
+					.set(savedPicture.downloadURL);
+			});
   }
 
   /**

@@ -12,7 +12,10 @@
     <ion-list-header>
       Personal Information
     </ion-list-header>
-
+		<center *ngIf="userProfile?.userPicture"><img src="{{userProfile?.userPicture}}" style="width:150px;height:150px;"></center>
+		<button primary block (click)="getPicture()">
+			Take a Picture
+		</button>
     <ion-item (click)="updateName()">
       <ion-grid>
         <ion-row>
