@@ -1,6 +1,7 @@
 {
-  "name": "firebase-auth",
-  "app_id": "",
-  "v2": true,
-  "typescript": true
+  "name": "event-manager",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
 }
