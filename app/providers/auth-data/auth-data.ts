@@ -16,6 +16,11 @@ export class AuthData {
 		return this.fireAuth.signInWithEmailAndPassword(email, password);
 	}
   
+	loginSocial() {
+    var authProvider = new firebase.auth.FacebookAuthProvider();
+    return this.fireAuth.signInWithPopup(authProvider);
+  }
+	
 	signupUser(email: string, password: string): any {
 		return this.fireAuth.createUserWithEmailAndPassword(email, password);
 	}

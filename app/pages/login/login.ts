@@ -2,12 +2,13 @@ import { Component } from '@angular/core';
 import { NavController, AlertController, LoadingController } from 'ionic-angular';
 import { ControlGroup, FormBuilder, Validators, AbstractControl } from '@angular/common';
 import { AuthData } from '../../providers/auth-data/auth-data';
+import { ProfileData } from '../../providers/profile-data/profile-data';
 import { SignupPage } from '../signup/signup';
 import { ResetPasswordPage } from '../reset-password/reset-password';
 
 @Component({
   templateUrl: 'build/pages/login/login.html',
-  providers: [AuthData]
+  providers: [AuthData, ProfileData]
 })
 export class LoginPage {
 
@@ -20,6 +21,7 @@ export class LoginPage {
 		private alertCtrl: AlertController, 
 		private loadingCtrl: LoadingController, 
 		public authData: AuthData, 
+		public profileData: ProfileData, 
 		public formBuilder: FormBuilder
 	) {
     this.navCtrl = navCtrl;
@@ -54,6 +56,40 @@ export class LoginPage {
       loading.dismiss();
     });
 	}
+	
+	loginSocial(event) {
+    event.preventDefault();
+    let loading = this.loadingCtrl.create();
+    loading.present();
+    this.authData.loginSocial().then((authData) => {
+      loading.onDidDismiss(() => {
+        this.profileData.getUserProfileByLink(authData.user.uid).once('value').then((userData) => {
+            var oauth = userData.val();
+            if (oauth) {
+              this.authData.userProfile.child(authData.user.uid).update({
+                email: authData.user.email
+              });
+            } else {
+              this.authData.userProfile.child(authData.user.uid).set({
+                email: authData.user.email,
+                firstName: authData.user.displayName,
+                userPicture: authData.user.photoURL
+              });
+            }
+        });
+      });
+      loading.dismiss();
+    }, (error) => {
+      loading.onDidDismiss(() => {
+        let prompt = this.alertCtrl.create({
+          message: error.message,
+          buttons: ['Ok']
+        });
+        prompt.present();
+      });
+      loading.dismiss();
+    });
+  }
 	
 	goToSignup() {
 		this.navCtrl.push(SignupPage);
