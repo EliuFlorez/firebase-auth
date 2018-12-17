@@ -1,0 +1,31 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>Login</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding class="login">
+  <form [formGroup]="loginForm" (submit)="loginUser($event)">
+    <ion-item>
+      <ion-label stacked>Email</ion-label>
+      <ion-input [formControl]="email" type="email"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label stacked>Password</ion-label>
+      <ion-input [formControl]="password" type="password"></ion-input>
+    </ion-item>
+		<br>
+    <button block type="submit">
+      Login
+    </button>
+  </form>
+	<button block class="button-facebook" (click)="loginSocial($event)">
+		<ion-icon name="logo-facebook"></ion-icon>Login with Facebook
+	</button>
+	<button block clear (click)="goToSignup()">
+		Create a new account
+	</button>
+	<button block clear (click)="goToResetPassword()">
+		I forgot my password
+	</button>
+</ion-content>
